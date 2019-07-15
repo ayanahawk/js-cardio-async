@@ -1,8 +1,0 @@
-{
-  "items": ["one", "two", "three", "four"],
-  "level1": {
-    "level2": {
-      "secret": "Json is pretty cool"
-    }
-  }
-}

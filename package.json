@@ -1,0 +1,24 @@
+{
+  "name": "js-cardio-async",
+  "version": "1.0.0",
+  "description": "JavaScript exercises to practice asynchronous coding",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/talent-path-la/js-cardio-async.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/talent-path-la/js-cardio-async/issues"
+  },
+  "homepage": "https://github.com/talent-path-la/js-cardio-async#readme",
+  "dependencies": {
+    "readline-sync": "^1.4.9"
+  }
+}
