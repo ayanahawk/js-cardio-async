@@ -22,7 +22,36 @@ Errors should also be logged (preferably in a human-readable format)
  * @param {string} key
  */
 
-/*
+function reset() {
+  const andrew = fs.writeFile(
+    './andrew.json',
+    JSON.stringify({
+      firstname: 'Andrew',
+      lastname: 'Maney',
+      email: 'amaney@talentpath.com',
+    })
+  );
+  const scott = fs.writeFile(
+    './scott.json',
+    JSON.stringify({
+      firstname: 'Scott',
+      lastname: 'Roberts',
+      email: 'sroberts@talentpath.com',
+      username: 'scoot',
+    })
+  );
+  const post = fs.writeFile(
+    './post.json',
+    JSON.stringify({
+      title: 'Async/Await lesson',
+      description: 'How to write asynchronous JavaScript',
+      date: 'July 15, 2019',
+    })
+  );
+  const log = fs.writeFile('./log.txt', '');
+  return Promise.all([andrew, scott, post, log]);
+}
+
 function log(value) {
   return fs.appendFile('log.txt', `${value} ${Date.now()}\n`);
 }
@@ -43,14 +72,12 @@ function get(file, key) {
   // 5. append the log file with the aboive value
 }
 
-*/
-
-async function get(file, key) {
-  const data = await fs.readFile(file, 'utf8');
-  const parsed = JSON.parse(data);
-  const value = parsed[key];
-  return value;
-}
+// async function get(file, key) {
+//   const data = await fs.readFile(file, 'utf8');
+//   const parsed = JSON.parse(data);
+//   const value = parsed[key];
+//   return value;
+// }
 
 /**
  * Sets the value of object[key] and rewrites object to file
@@ -58,43 +85,67 @@ async function get(file, key) {
  * @param {string} key
  * @param {string} value
  */
-function set(file, key, value) {}
+async function set(file, key, value) {
+  // 1- find file - readFile
+  // 2- get data
+  const data = await fs.readFile(file);
+  // 3- parse
+  const parsed = JSON.parse(data);
+  // 4- set value[key]- property
+  parsed[key] = value;
+  // 5- write to File
+  return fs.writeFile(file, JSON.stringify(parsed));
+}
 
 /**
  * Deletes key from object and rewrites object to file
  * @param {string} file
  * @param {string} key
  */
-function remove(file, key) {}
 
+async function remove(file, key) {
+  // 1- find file, readFile
+  // 2-get data
+  const data = await fs.readFile(file);
+  // 3-parse data/ grab key set to property
+
+  const parsed = JSON.parse(data);
+  parsed[key] = value;
+  const remove = value.unlink(file, key);
+
+  return remove;
+
+  // 4- delete value
+}
 /**
  * Deletes file.
  * Gracefully errors if the file does not exist.
  * @param {string} file
  */
-function deleteFile(file) {}
+async function deleteFile(file) {
+  // 3- check if it exists
+  // 4- delete file
+  return fs
+    .access(file)
+    .then(() => fs.unlink(file))
+    .catch(err => console.log('There is an error'));
+}
 
 /**
  * Creates file with an empty object inside.
  * Gracefully errors if the file already exists.
  * @param {string} file JSON filename
  */
+
 function createFile(file) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      file.push(file);
-      const error = false;
-
-      if (!error) {
-        resolve();
-      } else {
-        reject('Error: Something went wrong!');
-      }
-    }, 2000);
-  });
+  return fs
+    .access(`${file}`)
+    .then(() =>
+      log(`Cannot create file, '${file}' already exists`, 'File already exists')
+    )
+    .catch(() => fs.writeFile(`${file}`, '{}'))
+    .then(() => log(`Successfully created '${file}'`));
 }
-
-createFile({ occupation: 'Instructor' }).then(get);
 
 /**
  * Merges all data into a mega object and logs it.
