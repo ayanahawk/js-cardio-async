@@ -1,1 +1,3 @@
-Something is in the log...
+Something is in the log...undefinedundefinedundefined
+Scottundefined 1563231014315
+undefined 1563231046045

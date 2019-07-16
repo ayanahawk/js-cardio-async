@@ -21,7 +21,36 @@ Errors should also be logged (preferably in a human-readable format)
  * @param {string} file
  * @param {string} key
  */
-function get(file, key) {}
+
+/*
+function log(value) {
+  return fs.appendFile('log.txt', `${value} ${Date.now()}\n`);
+}
+function get(file, key) {
+  // 1. read file
+  // 2. handle promise-
+  return fs
+    .readFile(file, 'utf8')
+    .then(data => {
+      // 3. parse data from string-JSON
+      const parsed = JSON.parse(data);
+      // 4. use the kney to get the value object[key]
+      const value = parsed[key];
+
+      return log(value);
+    })
+    .catch(err => log(`error ${file}`));
+  // 5. append the log file with the aboive value
+}
+
+*/
+
+async function get(file, key) {
+  const data = await fs.readFile(file, 'utf8');
+  const parsed = JSON.parse(data);
+  const value = parsed[key];
+  return value;
+}
 
 /**
  * Sets the value of object[key] and rewrites object to file
@@ -50,7 +79,22 @@ function deleteFile(file) {}
  * Gracefully errors if the file already exists.
  * @param {string} file JSON filename
  */
-function createFile(file) {}
+function createFile(file) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      file.push(file);
+      const error = false;
+
+      if (!error) {
+        resolve();
+      } else {
+        reject('Error: Something went wrong!');
+      }
+    }, 2000);
+  });
+}
+
+createFile({ occupation: 'Instructor' }).then(get);
 
 /**
  * Merges all data into a mega object and logs it.

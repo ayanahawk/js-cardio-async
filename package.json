@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/talent-path-la/js-cardio-async#readme",
   "dependencies": {
+    "nodemon": "^1.19.1",
     "readline-sync": "^1.4.9"
   }
 }
