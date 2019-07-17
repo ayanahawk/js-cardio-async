@@ -2,3 +2,6 @@ Something is in the log...undefinedundefinedundefined
 Scottundefined 1563231014315
 undefined 1563231046045
 Successfully created 'scot.json' 1563303821726
+No such file or directory firstname 1563312211290
+No such file or directory lit 1563376890599
+lit: Ayana set in scott.json 1563377226043

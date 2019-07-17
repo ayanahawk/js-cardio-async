@@ -4,8 +4,9 @@
   "description": "JavaScript exercises to practice asynchronous coding",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,7 @@
   "homepage": "https://github.com/talent-path-la/js-cardio-async#readme",
   "dependencies": {
     "nodemon": "^1.19.1",
+    "postman": "^0.2.0",
     "readline-sync": "^1.4.9"
   }
 }

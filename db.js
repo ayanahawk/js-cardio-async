@@ -86,15 +86,19 @@ function get(file, key) {
  * @param {string} value
  */
 async function set(file, key, value) {
-  // 1- find file - readFile
-  // 2- get data
-  const data = await fs.readFile(file);
-  // 3- parse
-  const parsed = JSON.parse(data);
-  // 4- set value[key]- property
-  parsed[key] = value;
-  // 5- write to File
-  return fs.writeFile(file, JSON.stringify(parsed));
+  try {
+    // read file
+    const data = await fs.readFile(file, `utf8`);
+    // handle promise data
+    const parsed = JSON.parse(data);
+    parsed[key] = value;
+    // return object to JSON string.
+    const newObj = JSON.stringify(parsed);
+    await fs.writeFile(file, newObj);
+    return log(`${key}: ${value} set in ${file}`);
+  } catch (err) {
+    return log(`No such file or directory ${file}`);
+  }
 }
 
 /**
@@ -104,19 +108,16 @@ async function set(file, key, value) {
  */
 
 async function remove(file, key) {
-  // 1- find file, readFile
-  // 2-get data
+  // 1- reading the file
   const data = await fs.readFile(file);
-  // 3-parse data/ grab key set to property
-
+  // parsing the data
   const parsed = JSON.parse(data);
-  parsed[key] = value;
-  const remove = value.unlink(file, key);
-
-  return remove;
-
-  // 4- delete value
+  // getting the data
+  delete parsed[key];
+  await fs.writeFile(`${file}`, JSON.stringify(parsed), 'utf-8');
+  return console.log(parsed);
 }
+
 /**
  * Deletes file.
  * Gracefully errors if the file does not exist.
@@ -136,6 +137,13 @@ async function deleteFile(file) {
  * Gracefully errors if the file already exists.
  * @param {string} file JSON filename
  */
+
+
+const noAccess=file =>
+  new Promise(resolve,reject)=>
+  fs.access()
+
+
 
 function createFile(file) {
   return fs
