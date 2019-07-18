@@ -1,4 +1,5 @@
 const fs = require('fs').promises;
+
 /*
 All of your functions must return a promise!
 */
@@ -137,13 +138,6 @@ async function deleteFile(file) {
  * Gracefully errors if the file already exists.
  * @param {string} file JSON filename
  */
-
-
-const noAccess=file =>
-  new Promise(resolve,reject)=>
-  fs.access()
-
-
 
 function createFile(file) {
   return fs

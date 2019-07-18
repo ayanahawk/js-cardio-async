@@ -1,4 +1,6 @@
 const http = require(`http`);
+const url = require(`url`);
+const db = require('./db');
 
 const server = http.createServer();
 
@@ -22,8 +24,28 @@ server.on('request', (request, response) => {
     response.writeHead(200, {
       'Content-Type': 'application/json',
       'Another-Header': 'more things',
-      'Another-Header': 'more things',
+      'Another-Header1S': 'more things',
     });
     response.end(JSON.stringify(status));
+  }
+
+  const parsedUrl = url.parse(request.url, true);
+  console.log(parsedUrl.query);
+
+  if (parsedUrl.pathname === '/set' && request.method === 'PATCH') {
+    return db
+      .set(
+        parsedUrl.query.file,
+        parsedUrl.query.key,
+        parsedUrl.query.value,
+        parsedUrl.query.key1,
+        parsedUrl.query.value1
+      )
+      .then(() => {
+        response.end('Value set');
+      })
+      .catch(err => {
+        // erro handler
+      });
   }
 });
