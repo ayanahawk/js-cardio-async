@@ -42,39 +42,45 @@ exports.patchHome = (request, response, { file, key, value }) => {
     .set(file, key, value)
     .then(() => {
       response.writeHead(200);
-      response.end('Value set');
+      response.end(file, key, value);
     })
     .catch(err => {
-      response.writeHead(400);
-      response.end();
-      // error handler
+      /* Send the whole error
+      response.writeHead(400, {
+        'Content-Type': 'application/json',
+      });
+      response.end(JSON.stringify(err));
+      */
+      /* Or just the error message */
+      response.writeHead(400, {
+        'Content-Type': 'text/html',
+      });
+      response.end(err.message);
     });
 };
 
 exports.postWrite = async (request, response, pathname) => {
+  // 1. get the body data from the request
   const data = [];
-  // event emitted when request reciecevs a chunk of the data
-  request.on('data', chunk => {
-    data.push(chunk);
-  });
-  // event emmitteed when recieved all the data
-  await request.on('end', async () => {
-    // parse data array
+  // event emitted when the request receives a chunk of data
+  request.on('data', chunk => data.push(chunk));
+
+  // event emitted when the request has received all of the data
+  request.on('end', async () => {
     try {
+      // parse our data array
       const body = JSON.parse(data);
-      // splitting URL
-
+  
+      // call some db function to create this file
       await db.createFile(pathname.split('/')[2], body);
-
-      console.log(body);
-      console.log(pathname);
-      response.writeHead(200, {
+      response.writeHead(201, {
         'Content-Type': 'text/html',
       });
-      return response.end('File written');
+      // return a response
+      response.end('File written');
     } catch (err) {
       response.writeHead(400, {
-        'Content-type': 'text/json',
+        'Content-Type': 'text/html',
       });
       response.end(err.message);
     }
@@ -114,6 +120,22 @@ exports.getFile = async (request, response, pathname, { key }) => {
     response.end(contents);
   } catch (err) {
     response.writeHead(404, {
+      'Content-Type': 'text/html',
+    });
+    response.end(err.message);
+  }
+};
+
+exports.removeKey = async (request, response, { file, key }) => {
+  try {
+    if (!file || !key) throw Error('Invalid syntax');
+    await db.remove(file, key);
+    response.writeHead(200, {
+      'Content-Type': 'text/html',
+    });
+    response.end('Succesfully removed');
+  } catch (err) {
+    response.writeHead(400, {
       'Content-Type': 'text/html',
     });
     response.end(err.message);

@@ -7,7 +7,7 @@ const fs = require('fs').promises;
  */
 
 function log(file) {
-  return fs.appendFile(`${file}`);
+  return fs.appendFile(`log.txt`,`${file}`);
 }
 
 /**
@@ -40,28 +40,44 @@ async function get(file, key) {
   }
 }
 
+/*
+Reads from json file and returns parsed object
+@param {string} file
+@returns object
+*/
+
+async function getObject(){
+  return fs.readFile(`${file}`).then(data=>JSON.parse(data))
+}
+
+/*
+Writes file as a parsed object
+returns parsed object
+*/
+
+async function writeObject(file, obj){
+  return fs.writeFile(`${file}`, JSON.stringify(obj))
+}
+
 /**
  * Sets the value of object[key] and rewrites object to file
  * @param {string} file
  * @param {string} key
  * @param {string} value
  */
-async function set(file, key, value) {
-  try {
-    // read file
-    const data = await fs.readFile(file, `utf8`);
-    // handle promise data
-    const parsed = JSON.parse(data);
-    parsed[key] = value;
-    // return object to JSON string.
-    const newObj = JSON.stringify(parsed);
-    await fs.writeFile(file, newObj);
-    return log(`${key}: ${value} set in ${file}`);
-  } catch (err) {
-    await fs.write(file, JSON.stringify(body));
-    return log(`${file}: No such file or directory ${file}`);
-  }
+function set(file, key, value) {
+  // Open file, parse data, set object[key] to value, rewrite object to file
+  return fs
+    .readFile(file, 'utf-8')
+    .then(data => {
+      const obj = JSON.parse(data);
+      obj[key] = value;
+      log(`${file} ${key} updated to ${value}`);
+      return fs.writeFile(file, JSON.stringify(obj));
+    })
+    .catch(err => log(`Error reading file ${file}`, err));
 }
+
 
 /**
  * Deletes key from object and rewrites object to file
@@ -69,16 +85,25 @@ async function set(file, key, value) {
  * @param {string} key
  */
 
-async function remove(file, key) {
-  // 1- reading the file
-  const data = await fs.readFile(file);
-  // parsing the data
-  const parsed = JSON.parse(data);
-  // getting the data
-  delete parsed[key];
-  await fs.writeFile(`${file}`, JSON.stringify(parsed), 'utf-8');
-  return console.log(parsed);
+function remove(file, key) {
+  return fs
+    .readFile(file, 'utf-8')
+    .then(data => {
+      const obj = JSON.parse(data);
+      if (!obj[key]) {
+        return log(
+          `Error invalid key ${key}`,
+          new Error(`Error invalid key "${key}"`)
+        );
+      }
+      delete obj[key];
+      // console.log(JSON.stringify(obj));
+      log(`Deleted key ${key} from ${file}`);
+      return fs.writeFile(file, JSON.stringify(obj));
+    })
+    .catch(err => log(`Error reading file ${file}`, err));
 }
+
 
 /**
  * Deletes file.
@@ -95,26 +120,42 @@ async function deleteFile(file) {
 }
 
 /**
- * Creates file with an empty object inside.
- * Gracefully errors if the file already exists.
- * @param {string} file JSON filename
+ * Promise constructor.
+ * Resolves if no access, rejects if access.
+ * @param {string} file file to test access
  */
-
 const noAccess = file =>
   new Promise((resolve, reject) =>
     fs
       .access(file)
-      .then(reject)
+      .then(() => reject(new Error('File already exists')))
       .catch(resolve)
   );
 
-async function createFile(file) {
+/**
+ * Creates file with an empty object inside.
+ * Gracefully errors if the file already exists.
+ * @param {string} file JSON filename
+ */
+async function createFile(file, content) {
   try {
-    await noAccess(file);
-    await fs.writeFile(file, `{}`);
-    return log(`${file}: created`);
+    const localFiles = await fs.readdir('./');
+    let fileExists = false;
+    localFiles.forEach(filename => {
+      if (filename === file) {
+        fileExists = true;
+      }
+    });
+    if (fileExists) {
+      return log(
+        `File ${file} already exists`,
+        console.log(`Error creating file. ${file} already exists`)
+      );
+    }
+    log(`File ${file} created`);
+    return fs.writeFile(file, JSON.stringify(content));
   } catch (err) {
-    return log(`ERROR file or directory already exists: ${file}`);
+    return log(`Error creating file ${file}`, err);
   }
 }
 
@@ -186,11 +227,14 @@ function difference(fileA, fileB) {}
 module.exports = {
   get,
   set,
+  getObject, 
+  writeObject,
   remove,
   deleteFile,
   createFile,
   mergeData,
   union,
+  noAccess,
   intersect,
   difference,
   getFile

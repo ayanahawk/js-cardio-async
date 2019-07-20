@@ -8,6 +8,7 @@ const {
   getStatus,
   patchHome,
   postWrite,
+  removeKey
 } = require('./controller');
 
 exports.handleRoutes = function(request, response) {
@@ -30,8 +31,12 @@ exports.handleRoutes = function(request, response) {
   }
 
   if (pathname.startsWith('/file') && request.method === 'GET') {
-    // why do i need to pass the querey and pathname?
+    // why do i need to pass the querey and pathname and not file and key? 
     return getFile(request, response, pathname, query);
+  }
+
+  if (pathname === '/remove' && request.method === 'DELETE') {
+    return removeKey(request, response, query);
   }
 
   notFound(request, response);
