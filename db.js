@@ -7,7 +7,7 @@ const fs = require('fs').promises;
  */
 
 function log(file) {
-  return fs.appendFile(`log.txt`,`${file}`);
+  return fs.appendFile(`log.txt`, `${file}`);
 }
 
 /**
@@ -46,8 +46,8 @@ Reads from json file and returns parsed object
 @returns object
 */
 
-async function getObject(){
-  return fs.readFile(`${file}`).then(data=>JSON.parse(data))
+async function getObject() {
+  return fs.readFile(`${file}`).then(data => JSON.parse(data));
 }
 
 /*
@@ -55,8 +55,8 @@ Writes file as a parsed object
 returns parsed object
 */
 
-async function writeObject(file, obj){
-  return fs.writeFile(`${file}`, JSON.stringify(obj))
+async function writeObject(file, obj) {
+  return fs.writeFile(`${file}`, JSON.stringify(obj));
 }
 
 /**
@@ -77,7 +77,6 @@ function set(file, key, value) {
     })
     .catch(err => log(`Error reading file ${file}`, err));
 }
-
 
 /**
  * Deletes key from object and rewrites object to file
@@ -103,7 +102,6 @@ function remove(file, key) {
     })
     .catch(err => log(`Error reading file ${file}`, err));
 }
-
 
 /**
  * Deletes file.
@@ -173,7 +171,6 @@ async function getFile(file) {
   }
 }
 
-
 /**
  * Merges all data into a mega object and logs it.
  * Each object key should be the filename (without the .json) and the value should be the contents
@@ -227,7 +224,7 @@ function difference(fileA, fileB) {}
 module.exports = {
   get,
   set,
-  getObject, 
+  getObject,
   writeObject,
   remove,
   deleteFile,
@@ -237,5 +234,5 @@ module.exports = {
   noAccess,
   intersect,
   difference,
-  getFile
+  getFile,
 };
